@@ -2,6 +2,8 @@ from datetime import datetime
 
 from . import db
 
+MAX_LEN_CUSTOM_ID = 16
+
 serializer = {'url': 'original',
               'custom_id': 'short'
               }

@@ -5,7 +5,7 @@ from flask import flash, redirect, render_template
 
 from . import app, db
 from .forms import URLMapForm
-from .models import URLMap
+from .models import MAX_LEN_CUSTOM_ID, URLMap
 
 
 def get_unique_short_id():
@@ -25,7 +25,7 @@ def link_shorter_view():
             flash('Имя {} уже занято!'.format(custom_id))
             return render_template('index.html', form=form)
         if form.custom_id.data:
-            if len(form.custom_id.data) > 16:
+            if len(form.custom_id.data) > MAX_LEN_CUSTOM_ID:
                 flash('Ссылка не должна превышать 16 символов')
                 return render_template('index.html', form=form)
             custom_id = form.custom_id.data

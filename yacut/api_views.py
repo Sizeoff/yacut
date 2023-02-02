@@ -4,8 +4,10 @@ import string
 
 from . import app, db
 from .errors import InvalidAPIUsage
-from .models import URLMap
+from .models import MAX_LEN_CUSTOM_ID, URLMap
 from .views import get_unique_short_id
+
+
 
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
@@ -34,15 +36,18 @@ def add_link():
         data['custom_id'] = get_unique_short_id()
     else:
 
-        if len(data['custom_id']) > 16:
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+        if len(data['custom_id']) > MAX_LEN_CUSTOM_ID:
+            raise InvalidAPIUsage(
+                'Указано недопустимое имя для короткой ссылки')
 
         for symb in data['custom_id']:
             if symb not in string.ascii_letters and symb not in string.digits:
-                raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+                raise InvalidAPIUsage(
+                    'Указано недопустимое имя для короткой ссылки')
 
         if URLMap.query.filter_by(short=data['custom_id']).first() is not None:
-            raise InvalidAPIUsage('Имя "{}" уже занято.'.format(data['custom_id']))
+            raise InvalidAPIUsage(
+                'Имя "{}" уже занято.'.format(data['custom_id']))
 
     urlmap = URLMap()
     urlmap.from_dict(data)
