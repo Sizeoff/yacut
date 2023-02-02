@@ -2,6 +2,7 @@ from random import choice
 import string
 
 from flask import flash, redirect, render_template
+from http import HTTPStatus
 
 from . import app, db
 from .forms import URLMapForm
@@ -46,4 +47,4 @@ def link_shorter_view():
 @app.route('/<string:short_id>', methods=['GET'])
 def new_link_view(short_id):
     urlmap = URLMap.query.filter_by(short=short_id).first_or_404()
-    return redirect(urlmap.original, code=302)
+    return redirect(urlmap.original, code=HTTPStatus.FOUND)

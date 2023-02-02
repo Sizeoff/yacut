@@ -1,4 +1,5 @@
 from flask import jsonify, request
+from http import HTTPStatus
 
 import string
 
@@ -8,15 +9,13 @@ from .models import MAX_LEN_CUSTOM_ID, URLMap
 from .views import get_unique_short_id
 
 
-
-
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
 def get_link(short_id):
-    if not URLMap.query.filter_by(short=short_id).all():
-        raise InvalidAPIUsage('Указанный id не найден', status_code=404)
+    urlmap = URLMap.query.filter_by(short=short_id).all()
+    if not urlmap:
+        raise InvalidAPIUsage('Указанный id не найден', status_code=HTTPStatus.NOT_FOUND)
 
-    urlmap = URLMap.query.filter_by(short=short_id).first()
-    return jsonify(urlmap.to_api_get()), 200
+    return jsonify(urlmap[0].to_api_get()), HTTPStatus.OK
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -53,4 +52,4 @@ def add_link():
     urlmap.from_dict(data)
     db.session.add(urlmap)
     db.session.commit()
-    return jsonify(urlmap.to_dict()), 201
+    return jsonify(urlmap.to_dict()), HTTPStatus.CREATED
